@@ -46,14 +46,9 @@ def get_occurrences():
         end_time = list_of_periods[i][0]
         params['start_time'] = period[1]
         params['end_time'] = list_of_periods[i][1]
-        while True:
-            data_from_site = get_data_from_site(url, params)
-            if data_from_site:
-                next_form = data_from_site['response'].get('next_from')
-            if next_form is None:
-                break
-            num_of_posts += len(data_from_site['response']['items'])
-            params['start_from'] = next_form
+        data_from_site = get_data_from_site(url, params)
+        if data_from_site:
+            num_of_posts = data_from_site['response'].get('total_count',0)
             
         occurrences[0].append(end_time.strftime('%d.%m.%Y'))
         occurrences[1].append(num_of_posts)
