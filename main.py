@@ -5,8 +5,7 @@ import logging
 import datetime
 import plotly.graph_objects as go
 
-VERSION_VKONTACTE = '5.52'
-VK_SERVICE_KEY = None
+VERSION_VKONTAKTE = '5.52'
 PERIOD_OF_DAYS_ANALYSIS = 7
 
 def get_url(api_method):
@@ -35,7 +34,8 @@ def get_table_of_periods():
 
 def get_occurrences():
     occurrences = [[],[]]
-    params = {'v':VERSION_VKONTACTE,'access_token':VK_SERVICE_KEY}
+    vk_service_key = os.getenv('VK_SERVICE_KEY')
+    params = {'v':VERSION_VKONTAKTE,'access_token':vk_service_key}
     params['q'] = 'Coca-Cola'
 
     list_of_periods = get_table_of_periods()
@@ -56,13 +56,14 @@ def get_occurrences():
     return occurrences
     
 def main():
+    
+    load_dotenv()
+    logging.basicConfig(level = logging.DEBUG, filename = u'log.txt')
+
     occurrences = get_occurrences() 
     if len(occurrences) > 0:  
         fig = go.Figure([go.Bar(x=occurrences[0][::-1], y=occurrences[1][::-1])])
         fig.show()
 
 if __name__=='__main__':
-    load_dotenv()
-    logging.basicConfig(level = logging.DEBUG, filename = u'log.txt') 
-    VK_SERVICE_KEY = os.getenv('VK_SERVICE_KEY')   
     main()
