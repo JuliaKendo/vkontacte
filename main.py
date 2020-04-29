@@ -13,11 +13,7 @@ def get_url(api_method):
     return url
 
 def get_data_from_site(url, params, headers=None):
-    try:
-        response = requests.get(url, headers=headers or {}, params=params)
-    except requests.exceptions.HTTPError as error:
-        logging.error(u'Ошибка получения данных по ссылке {0}:\n{1}'.format(url, error))
-        return
+    response = requests.get(url, headers=headers or {}, params=params)
     response.raise_for_status()
     return response.json()
 
@@ -59,9 +55,17 @@ def main():
     
     load_dotenv()
     logging.basicConfig(level = logging.DEBUG, filename = u'log.txt')
+    occurrences = None
+    try:
+        occurrences = get_occurrences()
+    except requests.exceptions.HTTPError as error:
+        logging.error('Не удалось получить данные с сайта vk.com: {0}'.format(error))
+    except requests.exceptions.ConnectionError as error:
+        logging.error('Не удалось получить данные с сайта vk.com: {0}'.format(error))
+    except (KeyError, TypeError) as error:
+        logging.error('Ошибка анализа данных с сайта vk.com: {0}'.format(error))
 
-    occurrences = get_occurrences() 
-    if len(occurrences) > 0:  
+    if occurrences:  
         fig = go.Figure([go.Bar(x=occurrences[0][::-1], y=occurrences[1][::-1])])
         fig.show()
 
